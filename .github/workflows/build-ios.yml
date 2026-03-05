@@ -36,8 +36,14 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$PLIST" 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Set :NSAppTransportSecurity:NSAllowsArbitraryLoads true" "$PLIST" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :NSAppTransportSecurity:NSAllowsLocalNetworking true" "$PLIST" 2>/dev/null || \
-          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsLocalNetworking bool true" "$PLIST"
+
+      - name: Aplicar patch de Basic Auth no AppDelegate
+        run: bash patch-ios-auth.sh
+
+      - name: Substituir BridgeViewController pelo BasicAuthViewController
+        run: |
+          MAIN="ios/App/App/Main.storyboard"
+          sed -i '' 's/customClass="CAPBridgeViewController"/customClass="BasicAuthViewController"/g' "$MAIN" || true
 
       - name: Instalar CocoaPods
         run: |
