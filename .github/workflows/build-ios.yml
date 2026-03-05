@@ -37,13 +37,8 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :NSAppTransportSecurity:NSAllowsArbitraryLoads true" "$PLIST" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$PLIST"
 
-      - name: Aplicar patch de Basic Auth no AppDelegate
+      - name: Aplicar patch de Basic Auth no ViewController
         run: bash patch-ios-auth.sh
-
-      - name: Substituir BridgeViewController pelo BasicAuthViewController
-        run: |
-          MAIN="ios/App/App/Main.storyboard"
-          sed -i '' 's/customClass="CAPBridgeViewController"/customClass="BasicAuthViewController"/g' "$MAIN" || true
 
       - name: Instalar CocoaPods
         run: |
@@ -60,7 +55,7 @@ jobs:
             -derivedDataPath build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "(error:|BUILD FAILED|BUILD SUCCEEDED)"
 
       - name: Empacotar .app em .zip para Appetize
         run: |
