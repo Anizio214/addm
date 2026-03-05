@@ -35,7 +35,7 @@ jobs:
           cd ios/App
           pod install
 
-      - name: Build iOS (sem assinatura)
+      - name: Build iOS (simulador)
         run: |
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
@@ -47,9 +47,14 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
+      - name: Empacotar .app em .zip para Appetize
+        run: |
+          cd build/Build/Products/Release-iphonesimulator
+          zip -r VendasRicoy.zip App.app
+
       - name: Publicar app como artefato
         uses: actions/upload-artifact@v4
         with:
           name: VendasRicoy-iOS
-          path: build/Build/Products/Release-iphonesimulator/App.app
+          path: build/Build/Products/Release-iphonesimulator/VendasRicoy.zip
           retention-days: 7
