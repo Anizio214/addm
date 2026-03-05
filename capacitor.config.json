@@ -1,0 +1,12 @@
+{
+  "appId": "br.com.ricoy.vendas",
+  "appName": "Vendas Ricoy",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

@@ -1,0 +1,55 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Instalar Capacitor iOS
+        run: npm install @capacitor/ios@6
+
+      - name: Adicionar plataforma iOS
+        run: npx cap add ios
+
+      - name: Sincronizar arquivos web
+        run: npx cap sync ios
+
+      - name: Instalar CocoaPods
+        run: |
+          cd ios/App
+          pod install
+
+      - name: Build iOS (sem assinatura)
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Publicar app como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: VendasRicoy-iOS
+          path: build/Build/Products/Release-iphonesimulator/App.app
+          retention-days: 7
